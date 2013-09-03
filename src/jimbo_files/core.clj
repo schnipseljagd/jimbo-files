@@ -17,7 +17,7 @@
   (io/copy (:content (s3/get-object s3-cred s3-bucket path))
            output))
 
-(defn resize-jimbo-image [path]
+(defn resize-jimbo-image [path width height]
   (with-open [input (:content (s3/get-object s3-cred s3-bucket path))]
-    (resize input 40 40)))
+    (resize input width height)))
 
