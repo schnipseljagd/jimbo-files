@@ -10,7 +10,8 @@
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/images/:filename" [filename] (resize-jimbo-image-as-stream filename))
+  (GET "/websites/:website-id/images/:image-id" [website-id image-id]
+    (resize-jimbo-image-as-stream (format "%s/image/%s" (biginteger website-id) (biginteger image-id))))
   (route/not-found "Image not found"))
 
 (def app
