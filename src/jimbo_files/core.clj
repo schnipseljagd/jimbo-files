@@ -5,10 +5,10 @@
          '[image-resizer.core :refer :all],
          '[image-resizer.format :as format])
 
-(def s3-cred {:access-key "AKIAIUCPDYCDBFXFMNTA",
-              :secret-key "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"})
+(def s3-cred {:access-key (get (System/getenv) "AWS_S3_ACCESS_KEY")
+              :secret-key (get (System/getenv) "AWS_S3_SECRET_KEY")})
 
-(def s3-bucket "testserver-jmeyer")
+(def s3-bucket (get (System/getenv) "AWS_S3_BUCKET"))
 
 (defn print-s3-meta [path]
   println (:metadata (s3/get-object s3-cred s3-bucket path)))
