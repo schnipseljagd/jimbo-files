@@ -8,14 +8,16 @@
 (def s3-cred {:access-key "AKIAIUCPDYCDBFXFMNTA",
               :secret-key "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"})
 
-(defn print-s3-meta [bucket, path]
-  println (:metadata (s3/get-object s3-cred bucket path)))
+(def s3-bucket "testserver-jmeyer")
 
-(defn copy-s3-object [output]
-  (io/copy (:content (s3/get-object s3-cred "jimbo-files" "simple.jpg"))
+(defn print-s3-meta [path]
+  println (:metadata (s3/get-object s3-cred s3-bucket path)))
+
+(defn copy-s3-object [output, path]
+  (io/copy (:content (s3/get-object s3-cred s3-bucket path))
            output))
 
 (defn resize-jimbo-image [filename]
-  (with-open [input (:content (s3/get-object s3-cred "jimbo-files" filename))]
+  (with-open [input (:content (s3/get-object s3-cred s3-bucket filename))]
     (resize input 40 40)))
 
