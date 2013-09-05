@@ -14,21 +14,17 @@
 (defn print-s3-meta [path]
   println (:metadata (s3/get-object s3-cred s3-bucket path)))
 
-(defn copy-s3-object [output, path]
-  (io/copy (:content (s3/get-object s3-cred s3-bucket path))
-           output))
-
 (defn s3-get-object-content [path]
   (:content (s3/get-object s3-cred s3-bucket path)))
+
+(defn s3-image-path [website-id image-id]
+  (format "%s/image/%s" website-id image-id))
 
 (defn resize-jimbo-image [path width height]
   (with-open [input (s3-get-object-content path)]
     (resize input width height)))
 
-(defn s3-image-path [website-id image-id]
-  (format "%s/image/%s" website-id image-id))
-
-(defn jimbo-image-as-stream [website-id image-id]
+(defn get-jimbo-image-as-stream [website-id image-id]
   (format/as-stream (util/buffered-image (s3-get-object-content (s3-image-path website-id image-id)) ) "jpg"))
 
 (defn resize-jimbo-image-as-stream [website-id image-id type]

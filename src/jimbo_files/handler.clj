@@ -9,7 +9,7 @@
   (GET "/" [] "Hello World")
   (GET ["/websites/:website-id/images/:image-id" :website-id #"[0-9]+" :image-id #"[0-9]+"]
        [website-id image-id]
-    (jimbo-image-as-stream website-id image-id))
+    (get-jimbo-image-as-stream website-id image-id))
   (GET ["/websites/:website-id/images/:image-id/:type" :website-id #"[0-9]+" :image-id #"[0-9]+"]
        [website-id image-id type]
     (resize-jimbo-image-as-stream website-id image-id type))
