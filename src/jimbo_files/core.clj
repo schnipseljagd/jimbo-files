@@ -1,6 +1,6 @@
 (ns jimbo-files.core)
 
-(require '[aws.sdk.s3 :as s3]
+(require '[amazonica.aws.s3 :as s3]
          '[clojure.java.io :as io]
          '[image-resizer.core :refer :all]
          '[image-resizer.format :as format]
@@ -12,10 +12,10 @@
 (def s3-bucket (get (System/getenv) "AWS_S3_BUCKET"))
 
 (defn print-s3-meta [path]
-  println (:metadata (s3/get-object s3-cred s3-bucket path)))
+  println (:object-metadata (s3/get-object s3-cred s3-bucket path)))
 
 (defn s3-get-object-content [path]
-  (:content (s3/get-object s3-cred s3-bucket path)))
+  (:object-content (s3/get-object s3-cred s3-bucket path)))
 
 (defn s3-image-path [website-id image-id]
   (format "%s/image/%s" website-id image-id))

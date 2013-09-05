@@ -1,7 +1,6 @@
 (ns jimbo-files.handler
   (:use compojure.core
-        jimbo-files.core
-        [image-resizer.format :as format])
+        jimbo-files.core)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
 
