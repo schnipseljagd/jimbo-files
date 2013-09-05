@@ -12,8 +12,8 @@
 
 (def s3-bucket (get (System/getenv) "AWS_S3_BUCKET"))
 
-(defn s3-get-object-content [path]
-  (:object-content (s3/get-object s3-cred s3-bucket path)))
+(defn s3-get-object [path]
+  (s3/get-object s3-cred s3-bucket path))
 
 (defn s3-put-object-metadata [path metadata]
   (s3/copy-object
@@ -35,11 +35,12 @@
         (ByteArrayInputStream. (.toByteArray baos)))))
 
 (defn resize-jimbo-image [path width height]
-  (with-open [input (s3-get-object-content path)]
+  (with-open [input (:object-content (s3-get-object path))]
     (resize input width height)))
 
 (defn get-jimbo-image-as-stream [website-id image-id]
-  (image-resizer-format-as-stream-for-mime-type (util/buffered-image (s3-get-object-content (s3-image-path website-id image-id)) ) "image/jpeg"))
+  (let [object (s3-get-object(s3-image-path website-id image-id))]
+    (image-resizer-format-as-stream-for-mime-type (util/buffered-image (:object-content object)) (:content-type (:object-metadata object)))))
 
 (defn resize-jimbo-image-as-stream [website-id image-id type]
   (image-resizer-format-as-stream-for-mime-type (resize-jimbo-image (s3-image-path website-id image-id) 40 60) "image/jpeg"))
