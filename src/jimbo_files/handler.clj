@@ -4,7 +4,8 @@
         ring.util.response)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.middleware.json :as middleware]))
+            [ring.middleware.json :as middleware]
+            [cheshire.core :as json]))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
@@ -18,7 +19,7 @@
         [website-id image-id profiles content-type]
     (s3-put-object-metadata
       (s3-image-path website-id image-id)
-      {:user-metadata {:jimdo-profiles profiles} :content-type content-type}))
+      {:user-metadata {:jimdo-profiles (json/generate-string profiles)} :content-type content-type}))
   (route/not-found "Image not found"))
 
 (def app

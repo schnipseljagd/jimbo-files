@@ -3,7 +3,8 @@
             [clojure.java.io :as io]
             [image-resizer.core :refer :all]
             [image-resizer.format :as format]
-            [image-resizer.util :as util])
+            [image-resizer.util :as util]
+            [cheshire.core :as json])
   (:import [java.io File ByteArrayOutputStream ByteArrayInputStream]
            [javax.imageio ImageIO]))
 
@@ -34,14 +35,15 @@
         (.write writer buffered-image)
         (ByteArrayInputStream. (.toByteArray baos)))))
 
-(defn resize-jimbo-image [path width height]
-  (with-open [input (:object-content (s3-get-object path))]
-    (resize input width height)))
-
 (defn get-jimbo-image-as-stream [website-id image-id]
   (let [object (s3-get-object(s3-image-path website-id image-id))]
     (image-resizer-format-as-stream-for-mime-type (util/buffered-image (:object-content object)) (:content-type (:object-metadata object)))))
 
+(defn get-imgage-profile-data-from-s3-metadata [type metadata]
+  ((keyword type) (json/parse-string (:jimdo-profiles (:user-metadata metadata)) true)))
+
 (defn resize-jimbo-image-as-stream [website-id image-id type]
-  (image-resizer-format-as-stream-for-mime-type (resize-jimbo-image (s3-image-path website-id image-id) 40 60) "image/jpeg"))
+  (let [object (s3-get-object(s3-image-path website-id image-id))]
+    (let [image-profile (get-imgage-profile-data-from-s3-metadata type (:object-metadata object))]
+      (image-resizer-format-as-stream-for-mime-type (resize (:object-content object) (:width image-profile) (:height image-profile)) (:content-type (:object-metadata object))))))
 
