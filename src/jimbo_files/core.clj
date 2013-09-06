@@ -36,14 +36,20 @@
         (ByteArrayInputStream. (.toByteArray baos)))))
 
 (defn get-jimbo-image-as-stream [website-id image-id]
-  (let [object (s3-get-object(s3-image-path website-id image-id))]
+  (let [object (s3-get-object (s3-image-path website-id image-id))]
     (image-resizer-format-as-stream-for-mime-type (util/buffered-image (:object-content object)) (:content-type (:object-metadata object)))))
 
-(defn get-imgage-profile-data-from-s3-metadata [type metadata]
-  ((keyword type) (json/parse-string (:jimdo-profiles (:user-metadata metadata)) true)))
+(defn get-image-profile-data-from-s3-metadata [profile metadata]
+  ((keyword profile) (json/parse-string (:jimdo-profiles (:user-metadata metadata)) true)))
 
-(defn resize-jimbo-image-as-stream [website-id image-id type]
-  (let [object (s3-get-object(s3-image-path website-id image-id))]
-    (let [image-profile (get-imgage-profile-data-from-s3-metadata type (:object-metadata object))]
-      (image-resizer-format-as-stream-for-mime-type (resize (:object-content object) (:width image-profile) (:height image-profile)) (:content-type (:object-metadata object))))))
+(defn image-resize-alg [crop]
+  (cond
+    (= crop true) resize-and-crop
+    :else resize))
 
+(defn resize-jimbo-image [image-profile input]
+  ((image-resize-alg (:crop image-profile)) input (:width image-profile) (:height image-profile)))
+
+(defn resize-jimbo-image-as-stream [website-id image-id profile]
+  (let [object (s3-get-object (s3-image-path website-id image-id))]
+      (image-resizer-format-as-stream-for-mime-type (resize-jimbo-image (get-image-profile-data-from-s3-metadata profile (:object-metadata object)) (:object-content object)) (:content-type (:object-metadata object)))))

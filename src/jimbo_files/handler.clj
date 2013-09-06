@@ -12,9 +12,9 @@
   (GET ["/websites/:website-id/images/:image-id" :website-id #"[0-9]+" :image-id #"[0-9]+"]
        [website-id image-id]
     (get-jimbo-image-as-stream website-id image-id))
-  (GET ["/websites/:website-id/images/:image-id/:type" :website-id #"[0-9]+" :image-id #"[0-9]+"]
-       [website-id image-id type]
-    (resize-jimbo-image-as-stream website-id image-id type))
+  (GET ["/websites/:website-id/images/:image-id/:profile" :website-id #"[0-9]+" :image-id #"[0-9]+"]
+       [website-id image-id profile]
+    (resize-jimbo-image-as-stream website-id image-id profile))
   (POST ["/websites/:website-id/images/:image-id" :website-id #"[0-9]+" :image-id #"[0-9]+"]
         [website-id image-id profiles content-type]
     (s3-put-object-metadata
