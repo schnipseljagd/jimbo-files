@@ -5,21 +5,35 @@
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [ring.middleware.json :as middleware]
-            [cheshire.core :as json]))
+            [clj-jwt.core :refer :all]
+            [image-resizer.core :refer :all]
+            [image-resizer.util :as util]
+            [image-resizer.format :as format]))
+
+(defn token->image-data [token]
+  (let [claims (:claims (str->jwt token))]
+    {:website-id (:wid claims) :image-id (:iid claims) :width (:iw claims) :height (:ih claims) :type (:ty claims) :content-type (:ict claims)}))
+
+(defn get-image-as-stream [path resize-algorithm image-data]
+  (let [object (s3-get-object path)]
+    (format/as-stream-by-mime-type (resize-algorithm (:object-content object) (:width image-data) (:height image-data)) (:content-type image-data))))
+
+(defn no-resize [input width height]
+  (util/buffered-image input))
+
+(defn get-image-resize-algorithm [image-data]
+  (case (:type image-data)
+    1 resize
+    2 resize-and-crop
+    no-resize))
+
+(defn get-image-as-stream-by-token [token]
+  (let [image-data (token->image-data token)]
+    (get-image-as-stream (s3-image-path (:website-id image-data) (:image-id image-data)) (get-image-resize-algorithm image-data) image-data)))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
-  (GET ["/websites/:website-id/images/:image-id" :website-id #"[0-9]+" :image-id #"[0-9]+"]
-       [website-id image-id]
-    (get-jimbo-image-as-stream website-id image-id))
-  (GET ["/websites/:website-id/images/:image-id/:profile" :website-id #"[0-9]+" :image-id #"[0-9]+"]
-       [website-id image-id profile]
-    (resize-jimbo-image-as-stream website-id image-id profile))
-  (POST ["/websites/:website-id/images/:image-id" :website-id #"[0-9]+" :image-id #"[0-9]+"]
-        [website-id image-id profiles content-type]
-    (s3-put-object-metadata
-      (s3-image-path website-id image-id)
-      {:user-metadata {:jimdo-profiles (json/generate-string profiles)} :content-type content-type}))
+  (GET "/images/:token" [token]
+    (get-image-as-stream-by-token token))
   (route/not-found "Image not found"))
 
 (def app

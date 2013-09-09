@@ -7,17 +7,13 @@ AWS_S3_ACCESS_KEY="some-key" AWS_S3_SECRET_KEY="some-secret" AWS_S3_BUCKET="some
 ```
 
 make sure you have the following image in your s3 bucket: 20557/image/5848694259
-set the profiles and content-type
+generate a jwt
 ```
-curl -v -XPOST -H'Content-type: application/json' -H'Accept: application/json' -d'{"profiles":{"std":{"width":271,"height":1500,"crop":false},"mobileapppreview":{"width":960,"height":640,"crop":false},"mobileappthumb":{"width":30,"height":30,"crop":true}},"content-type":"image/jpeg"}' http://localhost:3000/websites/20557/images/5848694259
-```
-
-get the original image
-```
-curl -v http://localhost:3000/websites/20557/images/5848694259
+jimbo-files.handle=> (-> {:wid 20557, :iid 5848694259, :iw 550, :ih 200 :ty 2 :ict "image/jpeg"} jwt (sign :HS256 "secret") to-str)
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpdyI6NTUwLCJpaWQiOjU4NDg2OTQyNTksIndpZCI6MjA1NTcsInR5IjoyLCJpaCI6MjAwLCJpY3QiOiJpbWFnZVwvanBlZyJ9.La07_Qb_cUC3Hp_mtPFgc985efyrDN7JChXGc5oAQoU"
 ```
 
-get the image for a profile
+get the image
 ```
-curl -v http://localhost:3000/websites/20557/images/5848694259/std
+curl -v http://localhost:3000/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpdyI6NTUwLCJpaWQiOjU4NDg2OTQyNTksIndpZCI6MjA1NTcsInR5IjoyLCJpaCI6MjAwLCJpY3QiOiJpbWFnZVwvanBlZyJ9.La07_Qb_cUC3Hp_mtPFgc985efyrDN7JChXGc5oAQoU
 ```
