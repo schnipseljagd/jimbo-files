@@ -5,7 +5,7 @@
                  [compojure "1.1.5"]
                  [ring/ring-json "0.2.0"]
                  [amazonica "0.1.15"]
-                 [image-resizer "0.1.5"]
+                 [image-resizer "0.1.6"]
                  [cheshire "5.2.0"]]
   :plugins [[lein-ring "0.8.5"]]
   :ring {:handler jimbo-files.handler/app}

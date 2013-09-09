@@ -28,16 +28,9 @@
 (defn s3-image-path [website-id image-id]
   (format "%s/image/%s" website-id image-id))
 
-(defn image-resizer-format-as-stream-for-mime-type [buffered-image mime-type]
-  (let [baos (ByteArrayOutputStream.)]
-    (let [writer (.next (ImageIO/getImageWritersByMIMEType mime-type))]
-        (.setOutput writer (ImageIO/createImageOutputStream baos))
-        (.write writer buffered-image)
-        (ByteArrayInputStream. (.toByteArray baos)))))
-
 (defn get-jimbo-image-as-stream [website-id image-id]
   (let [object (s3-get-object (s3-image-path website-id image-id))]
-    (image-resizer-format-as-stream-for-mime-type (util/buffered-image (:object-content object)) (:content-type (:object-metadata object)))))
+    (format/as-stream-by-mime-type (util/buffered-image (:object-content object)) (:content-type (:object-metadata object)))))
 
 (defn get-image-profile-data-from-s3-metadata [profile metadata]
   ((keyword profile) (json/parse-string (:jimdo-profiles (:user-metadata metadata)) true)))
@@ -52,4 +45,4 @@
 
 (defn resize-jimbo-image-as-stream [website-id image-id profile]
   (let [object (s3-get-object (s3-image-path website-id image-id))]
-      (image-resizer-format-as-stream-for-mime-type (resize-jimbo-image (get-image-profile-data-from-s3-metadata profile (:object-metadata object)) (:object-content object)) (:content-type (:object-metadata object)))))
+      (format/as-stream-by-mime-type (resize-jimbo-image (get-image-profile-data-from-s3-metadata profile (:object-metadata object)) (:object-content object)) (:content-type (:object-metadata object)))))
