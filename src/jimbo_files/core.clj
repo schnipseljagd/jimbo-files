@@ -1,4 +1,5 @@
 (ns jimbo-files.core
+  (:use [clojure.set :only [rename-keys]])
   (:require [amazonica.aws.s3 :as s3]
             [clj-jwt.core :refer :all]
             [image-resizer.core :refer :all]
@@ -21,7 +22,7 @@
 
 (defn token->image-data [token]
   (let [claims (:claims (str->jwt (str token-header-part "." token)))]
-    (rename-keys claims {:website-id :u, :image-id :i, :width :w, :height :h, :type :t, :content-type :c})))
+    (rename-keys claims {:u :website-id, :i :image-id, :w :width, :h :height, :t :type, :c :content-type})))
 
 (defn get-image-as-stream [path resize-algorithm image-data]
   (let [object (s3-get-object path)]
