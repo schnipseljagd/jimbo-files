@@ -1,6 +1,8 @@
 jimbo-files
 ===========
 
+## run it
+
 start the webserver
 ```
 AWS_S3_ACCESS_KEY="some-key" AWS_S3_SECRET_KEY="some-secret" AWS_S3_BUCKET="some-bucket" lein ring server
@@ -18,3 +20,8 @@ get the image (jwt without the header part)
 ```
 curl -v http://localhost:3000/images/eyJpdyI6NTUwLCJpaWQiOjU4NDg2OTQyNTksIndpZCI6MjA1NTcsInR5IjoyLCJpaCI6MjAwLCJpY3QiOiJpbWFnZVwvanBlZyJ9.La07_Qb_cUC3Hp_mtPFgc985efyrDN7JChXGc5oAQoU
 ```
+
+## todos
+
+ * animated gif support
+ * image filter correct?
