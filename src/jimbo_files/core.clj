@@ -16,9 +16,12 @@
 (defn s3-image-path [website-id image-id]
   (format "%s/image/%s" website-id image-id))
 
+(def token-header-part
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9")
+
 (defn token->image-data [token]
-  (let [claims (:claims (str->jwt token))]
-    {:website-id (:wid claims) :image-id (:iid claims) :width (:iw claims) :height (:ih claims) :type (:ty claims) :content-type (:ict claims)}))
+  (let [claims (:claims (str->jwt (str token-header-part "." token)))]
+    {:website-id (:u claims) :image-id (:i claims) :width (:w claims) :height (:h claims) :type (:t claims) :content-type (:c claims)}))
 
 (defn get-image-as-stream [path resize-algorithm image-data]
   (let [object (s3-get-object path)]
