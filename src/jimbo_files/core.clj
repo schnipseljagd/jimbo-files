@@ -1,6 +1,6 @@
 (ns jimbo-files.core
   (:use [clojure.set :only [rename-keys]])
-  (:require [amazonica.aws.s3 :as s3]
+  (:require [aws.sdk.s3 :as s3]
             [clj-jwt.core :refer :all]
             [image-resizer.core :refer :all]
             [image-resizer.util :as util]
@@ -11,8 +11,7 @@
 
 (def s3-bucket (get (System/getenv) "AWS_S3_BUCKET"))
 
-(defn s3-get-object [path]
-  (s3/get-object s3-cred s3-bucket path))
+(def s3-get-object (partial s3/get-object s3-cred s3-bucket))
 
 (defn s3-image-path [website-id image-id]
   (format "%s/image/%s" website-id image-id))
@@ -26,7 +25,7 @@
 
 (defn get-image-as-stream [path resize-algorithm image-data]
   (let [object (s3-get-object path)]
-    (format/as-stream-by-mime-type (resize-algorithm (:object-content object) (:width image-data) (:height image-data)) (:content-type image-data))))
+    (format/as-stream-by-mime-type (resize-algorithm (:content object) (:width image-data) (:height image-data)) (:content-type image-data))))
 
 (defn no-resize [input width height]
   (util/buffered-image input))
