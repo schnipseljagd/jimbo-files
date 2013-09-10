@@ -21,7 +21,7 @@
 
 (defn token->image-data [token]
   (let [claims (:claims (str->jwt (str token-header-part "." token)))]
-    {:website-id (:u claims) :image-id (:i claims) :width (:w claims) :height (:h claims) :type (:t claims) :content-type (:c claims)}))
+    (rename-keys claims {:website-id :u, :image-id :i, :width :w, :height :h, :type :t, :content-type :c})))
 
 (defn get-image-as-stream [path resize-algorithm image-data]
   (let [object (s3-get-object path)]
