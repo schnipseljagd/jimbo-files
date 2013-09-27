@@ -7,7 +7,8 @@
                  [clj-aws-s3 "0.3.7"]
                  [image-resizer "0.1.6"]
                  [metrics-clojure-ring "1.0.1"]
-                 [clj-jwt "0.0.3"]]
+                 [clj-jwt "0.0.3"]
+                 [ring/ring-jetty-adapter "1.1.6"]]
   :plugins [[lein-ring "0.8.5"]]
   :ring {:handler jimbo-files.handler/app}
   :profiles

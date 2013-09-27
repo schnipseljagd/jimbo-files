@@ -4,7 +4,8 @@
         ring.util.response)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.middleware.json :as middleware]))
+            [ring.middleware.json :as middleware]
+            [ring.adapter.jetty :as jetty]))
 
 (defroutes app-routes
   (GET "/images/:token" [token]
@@ -16,3 +17,6 @@
   (middleware/wrap-json-body)
   (middleware/wrap-json-response)
   (middleware/wrap-json-params)))
+
+(defn -main [port]
+  (jetty/run-jetty app {:port (Integer. port) :join? false}))
